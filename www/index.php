@@ -48,7 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         body { 
             font-family: 'Segoe UI', sans-serif; 
             /* Image de fond (Nature sombre pour faire ressortir le verre) */
-            background: url('https://images.unsplash.com/photo-1472214103451-9374bd1c798e?q=80&w=2070&auto=format&fit=crop') no-repeat center center fixed; 
+            background: url('img/Background.jpg') no-repeat center center fixed; 
             background-size: cover; /* L'image couvre tout l'écran */
             display: flex; 
             justify-content: center; 
