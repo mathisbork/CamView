@@ -1,50 +1,35 @@
 <?php
-session_start(); // On démarre la session pour se souvenir du visiteur
+// www/index.php
+require 'db.php'; // On utilise la connexion partagée
+session_start();
 
-// --- 1. CONFIGURATION ---
-$host = 'lamp-mysql';
-$db   = 'CamView';      // Le nom de ta base (vu sur ta capture)
-$user = 'root';
-$pass = 'Estiam2025*';  // Ton mot de passe root
-$charset = 'utf8mb4';
-
-$dsn = "mysql:host=$host;dbname=$db;charset=$charset";
-$options = [
-    PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
-    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-    PDO::ATTR_EMULATE_PREPARES   => false,
-];
-
-// --- 2. CONNEXION BDD ---
-try {
-    $pdo = new PDO($dsn, $user, $pass, $options);
-} catch (\PDOException $e) {
-    die("❌ Erreur de connexion : " . $e->getMessage());
-}
-
-// --- 3. TRAITEMENT DECONNEXION ---
+// --- TRAITEMENT DECONNEXION ---
 if (isset($_GET['action']) && $_GET['action'] === 'logout') {
     session_destroy();
     header("Location: index.php");
     exit;
 }
 
-// --- 4. TRAITEMENT CONNEXION ---
+// --- TRAITEMENT CONNEXION ---
 $message = "";
+if (isset($_SESSION['success'])) {
+    $message = "<span style='color:green'>".$_SESSION['success']."</span>";
+    unset($_SESSION['success']);
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = $_POST['username'] ?? '';
     $password = $_POST['password'] ?? '';
 
-    // On cherche l'utilisateur dans ta table 'user'
+    // On cherche l'utilisateur
     $stmt = $pdo->prepare("SELECT * FROM user WHERE username = ?");
     $stmt->execute([$username]);
     $user = $stmt->fetch();
 
-    // On vérifie le mot de passe hashé
+    // VERIFICATION DU HASH (C'est ici que ça marchera enfin !)
     if ($user && password_verify($password, $user['password'])) {
-        $_SESSION['user_id'] = $user['user_id']; // Ta colonne s'appelle user_id
+        $_SESSION['user_id'] = $user['user_id'];
         $_SESSION['username'] = $user['username'];
-        // On recharge la page pour passer en mode "connecté"
         header("Location: index.php");
         exit;
     } else {
@@ -57,7 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Espace Membre CamView</title>
+    <title>Connexion CamView</title>
     <style>
         body { font-family: sans-serif; background: #e9ecef; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
         .card { background: white; padding: 40px; border-radius: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 350px; text-align: center; }
@@ -67,7 +52,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         button:hover { background-color: #218838; }
         .logout { background-color: #dc3545; }
         .logout:hover { background-color: #c82333; }
-        .error { color: #dc3545; margin-top: 15px; font-size: 0.9em; }
+        .register-link { margin-top: 15px; display: block; color: #666; text-decoration: none; font-size: 0.9em; }
+        .register-link:hover { text-decoration: underline; }
+        .error { color: #dc3545; margin-top: 15px; }
         .welcome-icon { font-size: 40px; margin-bottom: 10px; display: block; }
     </style>
 </head>
@@ -94,6 +81,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <?php if ($message): ?>
                 <div class="error"><?php echo $message; ?></div>
             <?php endif; ?>
+
+            <a href="register.php" class="register-link">Pas encore inscrit ? Créer un compte</a>
         <?php endif; ?>
     </div>
 
