@@ -26,7 +26,7 @@
         try {
             $conn = new PDO("mysql:host=$host", $user, $pass);
             $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            echo '<p class="status success">✅ Connexion MySQL réussie !(Test N.1)</p>';
+            echo '<p class="status success">✅ Connexion MySQL réussie !(Test N.2)</p>';
         } catch(PDOException $e) {
             echo '<p class="status error">❌ Échec MySQL : ' . $e->getMessage() . '</p>';
         }
