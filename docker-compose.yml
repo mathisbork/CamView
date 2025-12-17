@@ -1,0 +1,52 @@
+services:
+  # Serveur Web Apache + PHP
+  web:
+    build: .
+    container_name: lamp-php
+    restart: always
+    ports:
+      - "9000:80"  # Accès via http://localhost:9000
+    volumes:
+      - ./www:/var/www/html
+    networks:
+      - lamp-network
+      - reverse_proxy
+
+  # Base de données MySQL
+  db:
+    image: mysql:8.0
+    container_name: lamp-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: Estiam2025*
+      MYSQL_DATABASE: Camview
+      MYSQL_USER: CamviewUser
+      MYSQL_PASSWORD: Estiam2025*
+    ports:
+      - "3307:3306" # Accès via port 3307 pour éviter conflit avec ton autre MySQL
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - lamp-network
+
+  # Interface graphique pour la base de données
+  phpmyadmin:
+    image: phpmyadmin
+    container_name: lamp-pma
+    restart: always
+    ports:
+      - "8081:80" # Accès via http://localhost:8081
+    environment:
+      PMA_HOST: db
+      MYSQL_ROOT_PASSWORD: root_password
+    networks:
+      - lamp-network
+
+networks:
+  lamp-network:
+    driver: bridge
+  reverse_proxy:
+    external: true
+
+volumes:
+  db_data:
