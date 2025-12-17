@@ -7,7 +7,7 @@
         body { font-family: sans-serif; text-align: center; padding: 50px; background: #f4f4f4; }
         .card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); display: inline-block; }
         .status { font-weight: bold; padding: 5px 10px; border-radius: 5px; }
-        .success { background: #d4edda; color: #155724; }
+        .success { background: #d4edda; color: #151f57ff; }
         .error { background: #f8d7da; color: #721c24; }
     </style>
 </head>
@@ -26,7 +26,7 @@
         try {
             $conn = new PDO("mysql:host=$host", $user, $pass);
             $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            echo '<p class="status success">✅ Connexion MySQL réussie !</p>';
+            echo '<p class="status success">✅ Connexion MySQL réussie !(Test N.1)</p>';
         } catch(PDOException $e) {
             echo '<p class="status error">❌ Échec MySQL : ' . $e->getMessage() . '</p>';
         }
