@@ -143,7 +143,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </a>
 
         <?php else: ?>
-            <h1>Bienvenue sur CamView</h1>
+            <h1><b>Bienvenue sur CamView</h1>
             <h2>Connexion</h2>
             <form method="POST" action="">
                 <input type="text" name="username" placeholder="Utilisateur" required>
