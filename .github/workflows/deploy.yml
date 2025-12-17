@@ -1,25 +1,23 @@
-name: Deploiement Automatique
+name: Deploiement Local (Runner)
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
+    # C'est ici que la magie opère : on utilise TON serveur
+    runs-on: self-hosted
     steps:
-      - name: Déploiement SSH
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          key: ${{ secrets.KEY }}
-          port: 22
-          script: |
-            cd ~/mon-projet-lamp
-            # On s'assure d'avoir la dernière version de GitHub
-            git fetch --all
-            git reset --hard origin/main
-            # On relance les conteneurs (avec reconstruction si le Dockerfile a changé)
-            docker compose up -d --build
+      - name: Récupération du code
+        # Cette action dit au runner d'aller chercher le code sur GitHub
+        uses: actions/checkout@v3
+
+      - name: Mise à jour et Redémarrage
+        run: |
+          cd ~/mon-projet-lamp
+          # On s'assure d'avoir la dernière version
+          git fetch --all
+          git reset --hard origin/main
+          # On relance les conteneurs
+          docker compose up -d --build
