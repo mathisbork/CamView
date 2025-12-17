@@ -72,7 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             padding: 40px; 
             border-radius: 16px; /* Coins bien arrondis */
             box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5); /* Ombre portée */
-            width: 350px; 
+            width: 400px; 
             text-align: center; 
             color: white; /* Texte en blanc pour le contraste */
         }
