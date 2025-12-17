@@ -44,18 +44,90 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <title>Connexion CamView</title>
     <style>
-        body { font-family: sans-serif; background: #e9ecef; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .card { background: white; padding: 40px; border-radius: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 350px; text-align: center; }
-        h1 { color: #333; margin-bottom: 20px; }
-        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
-        button { width: 100%; padding: 12px; background-color: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; font-weight: bold; }
-        button:hover { background-color: #218838; }
-        .logout { background-color: #dc3545; }
+        /* Image de fond pour toute la page */
+        body { 
+            font-family: 'Segoe UI', sans-serif; 
+            /* Image de fond (Nature sombre pour faire ressortir le verre) */
+            background: url('https://images.unsplash.com/photo-1472214103451-9374bd1c798e?q=80&w=2070&auto=format&fit=crop') no-repeat center center fixed; 
+            background-size: cover; /* L'image couvre tout l'écran */
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+            margin: 0; 
+        }
+
+        /* L'effet LIQUID GLASS */
+        .card { 
+            /* Fond blanc très transparent (15%) */
+            background: rgba(255, 255, 255, 0.15); 
+            
+            /* Le flou magique derrière la box */
+            backdrop-filter: blur(15px); 
+            -webkit-backdrop-filter: blur(15px); /* Pour Safari */
+            
+            /* Bordure fine et transparente pour l'effet "verre" */
+            border: 1px solid rgba(255, 255, 255, 0.2); 
+            
+            padding: 40px; 
+            border-radius: 16px; /* Coins bien arrondis */
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5); /* Ombre portée */
+            width: 350px; 
+            text-align: center; 
+            color: white; /* Texte en blanc pour le contraste */
+        }
+
+        h1 { margin-bottom: 25px; font-weight: 600; letter-spacing: 1px; }
+
+        /* Les champs de saisie (Inputs) aussi en mode verre */
+        input { 
+            width: 100%; 
+            padding: 12px; 
+            margin: 10px 0; 
+            background: rgba(255, 255, 255, 0.2); /* Fond semi-transparent */
+            border: none; 
+            border-radius: 30px; /* Inputs arrondis */
+            color: white; 
+            font-size: 16px;
+            box-sizing: border-box;
+            outline: none;
+            text-align: center;
+            transition: 0.3s;
+        }
+
+        /* Couleur du texte "placeholder" (ex: "Mot de passe") */
+        input::placeholder { color: rgba(255, 255, 255, 0.7); }
+
+        /* Effet au clic dans l'input */
+        input:focus { background: rgba(255, 255, 255, 0.4); box-shadow: 0 0 10px rgba(255,255,255,0.5); }
+
+        /* Le bouton */
+        button { 
+            width: 100%; 
+            padding: 12px; 
+            margin-top: 15px;
+            background-color: rgba(40, 167, 69, 0.8); 
+            color: white; 
+            border: none; 
+            border-radius: 30px; 
+            cursor: pointer; 
+            font-size: 16px; 
+            font-weight: bold; 
+            transition: 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        button:hover { background-color: #218838; transform: scale(1.02); }
+        
+        /* Bouton déconnexion rouge */
+        .logout { background-color: rgba(220, 53, 69, 0.8); }
         .logout:hover { background-color: #c82333; }
-        .register-link { margin-top: 15px; display: block; color: #666; text-decoration: none; font-size: 0.9em; }
-        .register-link:hover { text-decoration: underline; }
-        .error { color: #dc3545; margin-top: 15px; }
-        .welcome-icon { font-size: 40px; margin-bottom: 10px; display: block; }
+
+        /* Liens */
+        a { color: #fff; text-decoration: none; font-size: 0.9em; display: inline-block; margin-top: 15px; border-bottom: 1px solid transparent; transition: 0.3s;}
+        a:hover { border-bottom: 1px solid white; }
+
+        .error { color: #ffadad; margin-top: 15px; text-shadow: 0 1px 2px black;}
+        .welcome-icon { font-size: 50px; margin-bottom: 10px; display: block; filter: drop-shadow(0 2px 5px rgba(0,0,0,0.3)); }
     </style>
 </head>
 <body>
