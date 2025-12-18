@@ -127,37 +127,44 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             box-shadow: 0 0 15px rgba(255,255,255,0.2); 
         }
 
-        /* Le bouton principal */
         button { 
             width: 100%; 
-            padding: 15px; 
-            margin-top: 20px;
-            /* Dégradé subtil pour un look plus moderne */
-            background: linear-gradient(135deg, rgba(40, 167, 69, 0.9), rgba(33, 136, 56, 0.9));
-            color: white; 
-            border: none; 
-            border-radius: 50px; 
+            padding: 14px;
+            margin-top: 25px;
+            
+            background: rgba(255, 255, 255, 0.05);
+            
+            color: #ffffff; 
+            border: 2px solid rgba(255, 255, 255, 0.85);
+            
+            border-radius: 50px;
             cursor: pointer; 
-            font-size: 18px; 
-            font-weight: bold; 
+            font-size: 18px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
-            letter-spacing: 0.5px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            backdrop-filter: blur(5px);
         }
+
         button:hover { 
-            transform: translateY(-2px); 
-            box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
-            background: linear-gradient(135deg, rgba(40, 167, 69, 1), rgba(33, 136, 56, 1));
+            background: rgba(255, 255, 255, 0.2);
+            border-color: #ffffff;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.3), 0 5px 15px rgba(0,0,0,0.3);
+            transform: translateY(-3px); 
         }
         
-        /* Bouton déconnexion rouge */
         .logout { 
-            background: linear-gradient(135deg, rgba(220, 53, 69, 0.9), rgba(200, 35, 51, 0.9));
-            box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+            background-color: rgba(220, 53, 69, 0.85); 
+            border: none;
+            box-shadow: 0 4px 15px rgba(220, 53, 69, 0.4);
         }
         .logout:hover { 
+            background-color: #dc3545; 
+            border: none;
+            box-shadow: 0 6px 20px rgba(220, 53, 69, 0.6);
             background: linear-gradient(135deg, rgba(220, 53, 69, 1), rgba(200, 35, 51, 1));
-            box-shadow: 0 6px 20px rgba(220, 53, 69, 0.4);
         }
 
         /* Liens */
