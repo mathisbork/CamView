@@ -1,19 +1,28 @@
 <?php
 // www/index.php
-require 'db.php'; // On utilise la connexion partagée
+require 'db.php'; // Connexion BDD
 session_start();
 
-// --- TRAITEMENT DECONNEXION ---
+// --- 1. GESTION DE LA DÉCONNEXION ---
 if (isset($_GET['action']) && $_GET['action'] === 'logout') {
     session_destroy();
     header("Location: index.php");
     exit;
 }
 
-// --- TRAITEMENT CONNEXION ---
+// --- 2. REDIRECTION SI DÉJÀ CONNECTÉ ---
+// Si l'utilisateur a déjà une session, on l'envoie direct au Dashboard
+if (isset($_SESSION['user_id'])) {
+    header("Location: dashboard.php");
+    exit;
+}
+
+// --- 3. TRAITEMENT DU FORMULAIRE DE CONNEXION ---
 $message = "";
+
+// Petit message vert si on vient de s'inscrire
 if (isset($_SESSION['success'])) {
-    $message = "<span style='color:#28a745; font-weight:bold;'>".$_SESSION['success']."</span>";
+    $message = "<span style='color:#a8ffbc; font-weight:bold; text-shadow: 0 1px 2px rgba(0,0,0,0.5);'>".$_SESSION['success']."</span>";
     unset($_SESSION['success']);
 }
 
@@ -21,16 +30,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = $_POST['username'] ?? '';
     $password = $_POST['password'] ?? '';
 
-    // On cherche l'utilisateur
+    // Recherche de l'utilisateur
     $stmt = $pdo->prepare("SELECT * FROM user WHERE username = ?");
     $stmt->execute([$username]);
     $user = $stmt->fetch();
 
-    // VERIFICATION DU HASH
+    // Vérification du mot de passe
     if ($user && password_verify($password, $user['password'])) {
+        // Création de la session (Le Token serveur)
         $_SESSION['user_id'] = $user['user_id'];
         $_SESSION['username'] = $user['username'];
-        header("Location: index.php");
+        
+        // SUCCÈS : Redirection vers l'application
+        header("Location: dashboard.php");
         exit;
     } else {
         $message = "❌ Identifiant ou mot de passe incorrect.";
@@ -48,10 +60,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         /* Reset de base */
         * { box-sizing: border-box; }
 
-        /* Image de fond pour toute la page */
+        /* Image de fond */
         body { 
-            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
-            /* Assure-toi que Background.jpg existe bien dans www/img/ */
+            font-family: 'Segoe UI', sans-serif;
             background: url('img/Background.jpg') no-repeat center center fixed; 
             background-size: cover;
             display: flex; 
@@ -59,38 +70,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             align-items: center; 
             min-height: 100vh; 
             margin: 0; 
-            padding: 20px; /* Petit padding pour les petits écrans */
+            padding: 20px;
         }
 
-        /* L'effet LIQUID GLASS AMÉLIORÉ */
+        /* --- CARTE GLASSMORPHISM --- */
         .card { 
-            /* Fond blanc plus transparent pour plus de profondeur */
             background: rgba(255, 255, 255, 0.1); 
-            
-            /* Flou plus intense pour l'effet liquide */
             backdrop-filter: blur(25px); 
             -webkit-backdrop-filter: blur(25px);
             
-            /* Bordure plus nette et brillante */
             border: 1px solid rgba(255, 255, 255, 0.3); 
-            border-top: 1px solid rgba(255, 255, 255, 0.5); /* Lumière venant du haut */
+            border-top: 1px solid rgba(255, 255, 255, 0.5); 
             
             padding: 40px 30px; 
-            border-radius: 24px; /* Coins plus arrondis */
-            /* Ombre portée douce pour détacher la carte du fond */
+            border-radius: 24px; 
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2); 
             width: 100%;
-            max-width: 420px; /* Largeur max confortable */
+            max-width: 400px; 
             text-align: center; 
             color: white;
         }
 
-        /* Style du logo CamView */
+        /* Logo */
         .logo {
-            width: 130px;
+            width: 120px;
             height: auto;
             margin-bottom: 20px;
-            /* Ombre portée sur le logo pour le détacher du verre */
             filter: drop-shadow(0 4px 4px rgba(0,0,0,0.3));
         }
 
@@ -102,14 +107,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             text-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
 
-        /* Les champs de saisie (Inputs) en mode verre */
+        /* Inputs */
         input { 
             width: 100%; 
             padding: 15px; 
             margin: 12px 0; 
-            background: rgba(255, 255, 255, 0.15); /* Un peu plus transparent */
+            background: rgba(255, 255, 255, 0.15); 
             border: 1px solid rgba(255, 255, 255, 0.1); 
-            border-radius: 50px; /* Inputs parfaitement ronds (pills) */
+            border-radius: 50px; 
             color: white; 
             font-size: 16px;
             outline: none;
@@ -117,31 +122,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             transition: all 0.3s ease;
         }
 
-        /* Couleur du texte "placeholder" */
-        input::placeholder { color: rgba(255, 255, 255, 0.6); font-weight: 300; }
+        input::placeholder { color: rgba(255, 255, 255, 0.6); }
 
-        /* Effet au focus dans l'input */
         input:focus { 
             background: rgba(255, 255, 255, 0.25); 
             border-color: rgba(255, 255, 255, 0.5);
             box-shadow: 0 0 15px rgba(255,255,255,0.2); 
         }
 
+        /* --- BOUTON STYLE FIGMA --- */
         button { 
             width: 100%; 
             padding: 14px;
             margin-top: 25px;
             
+            /* Fond transparent */
             background: rgba(255, 255, 255, 0.05);
-            
             color: #ffffff; 
-            border: 2px solid rgba(255, 255, 255, 0.85);
             
-            border-radius: 50px;
+            /* Bordure blanche marquée */
+            border: 2px solid rgba(255, 255, 255, 0.85);
+            border-radius: 50px; 
+            
             cursor: pointer; 
-            font-size: 18px;
-            font-weight: 600;
-            letter-spacing: 1px;
+            font-size: 18px; 
+            font-weight: 600; 
+            letter-spacing: 1px; 
             
             transition: all 0.3s ease;
             box-shadow: 0 5px 15px rgba(0,0,0,0.2);
@@ -154,20 +160,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             box-shadow: 0 0 20px rgba(255, 255, 255, 0.3), 0 5px 15px rgba(0,0,0,0.3);
             transform: translateY(-3px); 
         }
-        
-        .logout { 
-            background-color: rgba(220, 53, 69, 0.85); 
-            border: none;
-            box-shadow: 0 4px 15px rgba(220, 53, 69, 0.4);
-        }
-        .logout:hover { 
-            background-color: #dc3545; 
-            border: none;
-            box-shadow: 0 6px 20px rgba(220, 53, 69, 0.6);
-            background: linear-gradient(135deg, rgba(220, 53, 69, 1), rgba(200, 35, 51, 1));
-        }
 
-        /* Liens */
+        /* Liens et Erreurs */
         a.register-link { 
             color: rgba(255, 255, 255, 0.8); 
             text-decoration: none; 
@@ -187,38 +181,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             color: #ffadad; 
             margin-top: 20px; 
             font-size: 0.9em;
+            text-shadow: 0 1px 2px black;
         }
-        .welcome-icon { font-size: 60px; margin-bottom: 20px; display: block; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3)); }
     </style>
 </head>
 <body>
 
     <div class="card">
-        <?php if (isset($_SESSION['username'])): ?>
-            <span class="welcome-icon">👤</span>
-            <h1>Bienvenue<br><?php echo htmlspecialchars($_SESSION['username']); ?></h1>
-            <p style="font-size: 1.1em; opacity: 0.9;">Vous êtes connecté sur CamView.</p>
-            
-            <a href="index.php?action=logout" style="text-decoration: none;">
-                <button class="logout">Se déconnecter</button>
-            </a>
-
-        <?php else: ?>
-            <img src="img/Icon.png" alt="Logo CamView" class="logo">
-            
-            <h1>Connexion</h1>
-            <form method="POST" action="">
-                <input type="text" name="username" placeholder="Nom d'utilisateur" required autocomplete="username">
-                <input type="password" name="password" placeholder="Mot de passe" required autocomplete="current-password">
-                <button type="submit">Se connecter</button>
-            </form>
-            
-            <?php if ($message): ?>
-                <div class="error"><?php echo $message; ?></div>
-            <?php endif; ?>
-
-            <a href="register.php" class="register-link">Pas encore de compte ? S'inscrire</a>
+        <img src="img/Icon.png" alt="Logo CamView" class="logo">
+        
+        <h1>Connexion</h1>
+        
+        <form method="POST" action="">
+            <input type="text" name="username" placeholder="Nom d'utilisateur" required autocomplete="username">
+            <input type="password" name="password" placeholder="Mot de passe" required autocomplete="current-password">
+            <button type="submit">Se connecter</button>
+        </form>
+        
+        <?php if ($message): ?>
+            <div class="error"><?php echo $message; ?></div>
         <?php endif; ?>
+
+        <a href="register.php" class="register-link">Pas encore de compte ? S'inscrire</a>
     </div>
 
 </body>
