@@ -143,8 +143,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </a>
 
         <?php else: ?>
-            <h1><b>Bienvenue sur CamView</h1>
-            <h2>Connexion</h2>
+            <a href="img/icon.png" style="display: block; margin: 0 auto 20px auto; width: 100px; height: 100px;">
+                <img src="img/icon.png" alt="Logo CamView" style="width: 100%; height: auto;">
+            </a>
+            <h1>Connexion</h1>
             <form method="POST" action="">
                 <input type="text" name="username" placeholder="Utilisateur" required>
                 <input type="password" name="password" placeholder="Mot de passe" required>
