@@ -11,7 +11,6 @@ if (isset($_GET['action']) && $_GET['action'] === 'logout') {
 }
 
 // --- 2. REDIRECTION SI DÉJÀ CONNECTÉ ---
-// Si l'utilisateur a déjà une session, on l'envoie direct au Dashboard
 if (isset($_SESSION['user_id'])) {
     header("Location: dashboard.php");
     exit;
@@ -20,9 +19,13 @@ if (isset($_SESSION['user_id'])) {
 // --- 3. TRAITEMENT DU FORMULAIRE DE CONNEXION ---
 $message = "";
 
-// Petit message vert si on vient de s'inscrire
+// Affichage du message de succès (venant de l'inscription)
 if (isset($_SESSION['success'])) {
-    $message = "<span style='color:#a8ffbc; font-weight:bold; text-shadow: 0 1px 2px rgba(0,0,0,0.5);'>".$_SESSION['success']."</span>";
+    // CORRECTION SÉCURITÉ (ANTI-XSS) : 
+    // On nettoie la variable avec htmlspecialchars() pour empêcher l'injection de Javascript
+    $clean_msg = htmlspecialchars($_SESSION['success'], ENT_QUOTES, 'UTF-8');
+    
+    $message = "<span style='color:#a8ffbc; font-weight:bold; text-shadow: 0 1px 2px rgba(0,0,0,0.5);'>".$clean_msg."</span>";
     unset($_SESSION['success']);
 }
 
@@ -30,21 +33,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = $_POST['username'] ?? '';
     $password = $_POST['password'] ?? '';
 
-    // Recherche de l'utilisateur
     $stmt = $pdo->prepare("SELECT * FROM user WHERE username = ?");
     $stmt->execute([$username]);
     $user = $stmt->fetch();
 
     // Vérification du mot de passe
     if ($user && password_verify($password, $user['password'])) {
-        // Création de la session (Le Token serveur)
+        //CORRECTION SÉCURITÉ (ANTI-SESSION FIXATION) :
+        // On génère un nouvel ID de session pour éviter qu'un pirate ne force l'utilisation d'un cookie connu
+        session_regenerate_id(true);
+
+        // Création de la session
         $_SESSION['user_id'] = $user['user_id'];
         $_SESSION['username'] = $user['username'];
         
-        // SUCCÈS : Redirection vers l'application
+        // SUCCÈS : Redirection
         header("Location: dashboard.php");
         exit;
     } else {
+        // CORRECTION SÉCURITÉ (ANTI-BRUTE FORCE) :
+        // On force une pause de 1 seconde
+        sleep(1);
+        
         $message = "❌ Identifiant ou mot de passe incorrect.";
     }
 }
